@@ -55,3 +55,10 @@ Giải thích:
 max_fails=3: Nếu một server lỗi 3 lần liên tiếp...
 fail_timeout=30s: ... thì Nginx sẽ bỏ qua nó trong 30 giây.
 
+
+Loại	Cấu Hình	Khi Nào Dùng?
+Round Robin (Mặc định)	server ...;	Khi các server có hiệu suất tương đương
+Least Connections	least_conn;	Khi một số request chạy lâu hơn bình thường
+IP Hash	ip_hash;	Khi cần giữ session trên một server
+Weighted Load Balancing	weight=3;	Khi có server mạnh hơn server khác
+Health Check	max_fails=3 fail_timeout=30s;	Khi cần loại bỏ server bị lỗi
