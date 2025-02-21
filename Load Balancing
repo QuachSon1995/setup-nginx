@@ -1,0 +1,57 @@
+Cấu hình trong /etc/nginx/nginx.conf hoặc /etc/nginx/sites-available/default
+1. Cấu hình basic
+http {
+    upstream backend_servers {
+        server 192.168.1.10:3001; # Backend 1
+        server 192.168.1.11:3002; # Backend 2
+        server 192.168.1.12:3003; # Backend 3
+    }
+
+    server {
+        listen 80;
+        server_name example.com;
+
+        location / {
+            proxy_pass http://backend_servers;
+            proxy_set_header Host $host;
+            proxy_set_header X-Real-IP $remote_addr;
+            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        }
+    }
+}
+ Giải thích:
+
+upstream backend_servers: Danh sách các server backend.
+proxy_pass http://backend_servers;: Nginx sẽ chuyển hướng request đến một trong các backend.
+proxy_set_header: Giữ lại thông tin request gốc.
+
+2. 
+upstream backend_servers {
+    least_conn;
+    server 192.168.1.10:3001;
+    server 192.168.1.11:3002;
+    server 192.168.1.12:3003;
+}
+
+upstream backend_servers {
+    ip_hash;
+    server 192.168.1.10:3001;
+    server 192.168.1.11:3002;
+    server 192.168.1.12:3003;
+}
+
+upstream backend_servers {
+    server 192.168.1.10:3001 weight=3; # Nhận nhiều request hơn
+    server 192.168.1.11:3002 weight=2;
+    server 192.168.1.12:3003 weight=1;
+}
+
+upstream backend_servers {
+    server 192.168.1.10:3001 max_fails=3 fail_timeout=30s;
+    server 192.168.1.11:3002 max_fails=3 fail_timeout=30s;
+    server 192.168.1.12:3003 max_fails=3 fail_timeout=30s;
+}
+Giải thích:
+max_fails=3: Nếu một server lỗi 3 lần liên tiếp...
+fail_timeout=30s: ... thì Nginx sẽ bỏ qua nó trong 30 giây.
+
